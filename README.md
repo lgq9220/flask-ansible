@@ -39,6 +39,9 @@ Flask实现Ansible和Ansible-Playbook的配置+部署系统。同时带有简单
 2. 服务器管理系统
 3. Ansible和Playbook配置+部署系统
 
+#### 如何实现的在线教程地址
+  https://item.taobao.com/item.htm?spm=a1z10.1-c.w4004-16405581643.28.6c3a3fcfbof39R&id=597766904277
+
 #### 参与贡献
 
 1. Fork 本仓库
