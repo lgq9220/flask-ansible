@@ -37,6 +37,7 @@ Flask实现Ansible和Ansible-Playbook的配置+部署系统。同时带有简单
 
 1. 认证系统
 ![需要登录](https://images.gitee.com/uploads/images/2019/0710/111040_c8e2f6e3_129867.png "认证.png")
+  
 登录界面没优化，比较丑，默认用户名密码shijiange/shijiangepwd，可自行添加用户
 ```
 insert into user (username,password) values ('xxx', md5('xxxx'));
@@ -47,7 +48,8 @@ insert into user (username,password) values ('xxx', md5('xxxx'));
 3. Ansible和Playbook配置+部署系统
 ![Ansible配置管理](https://images.gitee.com/uploads/images/2019/0710/111415_7c10e8ad_129867.png "Ansible配置管理.png")
 ![Ansible执行说明](https://images.gitee.com/uploads/images/2019/0710/111449_c7e23e77_129867.png "Ansible执行说明.png")
-
+![Playbook配置管理](https://images.gitee.com/uploads/images/2019/0710/111629_00b26a56_129867.png "Playbook配置管理.png")
+![Playbook执行说明](https://images.gitee.com/uploads/images/2019/0710/111704_67af05d0_129867.png "Playbook执行说明.png")
 
 #### 如何实现的在线教程地址
   https://item.taobao.com/item.htm?spm=a1z10.1-c.w4004-16405581643.28.6c3a3fcfbof39R&id=597766904277
