@@ -10,16 +10,28 @@ Flask实现Ansible和Ansible-Playbook的配置+部署系统。同时带有简单
 #### 安装教程
 
 1. 创建数据库
-  `create database devops;  
+
+```
+  create database devops;  
   grant all privileges on *.* to 'shijiange'@'127.0.0.1' identified by 'shijiangepwd';  
-  flush privileges;`
+  flush privileges;
+```
+
 2. 导入数据
-  `set names utf8;  
-  source Flask-Ansible.sql;`
+
+```
+  set names utf8;  
+  source Flask-Ansible.sql;
+```
+
 3. Python3依赖安装
-  `pip3 install -r requirements.txt`
+```  
+  pip3 install -r requirements.txt
+```
 4. 运行Flask项目
-  `python3 app.py`
+```  
+  python3 app.py
+```
 
 #### 使用说明
 
