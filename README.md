@@ -50,7 +50,7 @@ insert into user (username,password) values ('xxx', md5('xxxx'));
 ![Playbook执行说明](https://images.gitee.com/uploads/images/2019/0710/111704_67af05d0_129867.png "Playbook执行说明.png")
 
 #### 如何实现的在线教程地址
-  https://item.taobao.com/item.htm?spm=a1z10.1-c.w4004-16405581643.28.6c3a3fcfbof39R&id=597766904277
+  https://edu.51cto.com/sd/cb410
 
 #### 参与贡献
 
