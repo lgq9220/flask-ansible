@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% block head %}
+    <title>服务器管理</title>
+    <script type="text/javascript">
+        function update_show(id) {
+            $.ajax({
+                url: '/servers/get_by_id',
+                type: 'get',
+                cache: false,
+                data: {
+                    id: id,
+                },
+                success: function (data) {
+                    tmpone = JSON.parse(data)[0];
+                    $("#id").val(id);
+                    $("#name").val(tmpone['name']);
+                    $("#ip").val(tmpone['ip']);
+                    $("#port").val(tmpone['port']);
+                    $("#user").val(tmpone['user']);
+                    $("#updateshow").modal('show');
+                }
+            });
+        }
+
+        function get_page(pagenow, pagesize, search) {
+            info = {"pagenow": pagenow, "pagesize": pagesize, "search": search}
+            $.ajax({
+                url: '/servers/get_by_page',
+                type: 'post',
+                cache: false,
+                data: JSON.stringify(info),
+                success: function (data) {
+                    allresult = JSON.parse(data);
+                    $("#tbodycontent").html("");
+                    for (i = 0; i < allresult.length; i++) {
+                        tmpone = '<tr>'
+                        tmpone = tmpone + '<td><input name="selectid" type="checkbox" value="' + allresult[i]['id'] + '"></td>'
+                        tmpone = tmpone + '<td>' + allresult[i]['name'] + '</td>'
+                        tmpone = tmpone + '<td>' + allresult[i]['ip'] + '</td>'
+                        tmpone = tmpone + '<td>' + allresult[i]['port'] + '</td>'
+                        tmpone = tmpone + '<td>' + allresult[i]['user'] + '</td>'
+                        tmpone = tmpone + '<td>'
+                        tmpone = tmpone + '<button class="btn btn-sm" onClick="update_show(' + allresult[i]['id'] + ')">更新</button>'
+                        tmpone = tmpone + ' <button class="btn btn-sm" onClick="delete_by_id(' + allresult[i]['id'] + ')">删除</button>'
+                        tmpone = tmpone + '</td>'
+                        tmpone = tmpone + '</tr>'
+                        $("#tbodycontent").append(tmpone);
+                    }
+                }
+            });
+            pagedown = '<button type="button" onclick="get_page(' + (pagenow - 1) + ',' + pagesize + ', \'' + search + '\')" class="btn btn-sm">上一页</button>'
+            pageup = '<button type="button" onclick="get_page(' + (pagenow + 1) + ',' + pagesize + ', \'' + search + '\')" class="btn btn-sm">下一页</button>'
+            $("#pageinfo").html("当前页：<p style='display: inline;' id='pagenow'>" + pagenow + "</p>");
+            $("#pageinfo").append(" " + pagedown);
+            $("#pageinfo").append(" " + pageup);
+        }
+
+        function delete_by_id(id) {
+            var msg = "确认删除?";
+            if (confirm(msg) == false) {
+                return false;
+            }
+            $.ajax({
+                url: '/servers/delete_by_id',
+                type: 'get',
+                cache: false,
+                data: {
+                    id: id,
+                },
+                success: function (data) {
+                    text_search = $('#text_search').val();
+                    pagenow = parseInt($('#pagenow').html());
+                    get_page(pagenow, 15, text_search);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            get_page(1, 15, '');
+            $('#bt_search').click(function () {
+                text_search = $('#text_search').val();
+                get_page(1, 15, text_search)
+            });
+            $('#bt_add').click(function () {
+                name_ = $('#add_name').val();
+                ip = $('#add_ip').val();
+                port = $('#add_port').val();
+                user = $('#add_user').val();
+                info = {name: name_, ip: ip, port: port, user: user};
+                $.ajax({
+                    url: '/servers/insert',
+                    type: 'POST',
+                    cache: false,
+                    data: JSON.stringify(info),
+                    success: function (data) {
+                        $("#addshow").modal('hide');
+                        text_search = $('#text_search').val();
+                        pagenow = parseInt($('#pagenow').html());
+                        get_page(pagenow, 15, text_search);
+                    }
+                });
+            });
+
+            $('#bt_mutidelete').click(function () {
+                var msg = "确认批量删除?";
+                if (confirm(msg) == false) {
+                    return false;
+                }
+                selectids = [];
+                $("input[name='selectid']:checked").each(function () {
+                    selectids.push($(this).val());
+                });
+                if (selectids.length == 0) {
+                    alert("先选择需要删除的信息？");
+                    return false;
+                }
+                $.ajax({
+                    url: '/servers/mutidelete',
+                    type: 'POST',
+                    cache: false,
+                    data: JSON.stringify(selectids),
+                    success: function (data) {
+                        text_search = $('#text_search').val();
+                        pagenow = parseInt($('#pagenow').html());
+                        get_page(pagenow, 15, text_search);
+                    }
+                });
+            });
+
+            $('#selectall').click(function () {
+                if (this.checked == true) {
+                    $("input[name='selectid']").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[name='selectid']").each(function () {
+                        this.checked = false;
+                    });
+                }
+            });
+
+            $('#bt_update').click(function () {
+                id = $('#id').val();
+                name_ = $('#name').val();
+                ip = $('#ip').val();
+                port = $('#port').val();
+                user = $('#user').val();
+                info = {id: id, name: name_, ip: ip, port: port, user: user}
+                $.ajax({
+                    url: '/servers/update',
+                    type: 'POST',
+                    cache: false,
+                    data: JSON.stringify(info),
+                    success: function (data) {
+                        $("#updateshow").modal('hide');
+                        text_search = $('#text_search').val();
+                        pagenow = parseInt($('#pagenow').html());
+                        get_page(pagenow, 15, text_search);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <br/>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form class="form-inline">
+                    <input type="text" class="form-control" id="text_search">
+                    <button type="button" class="btn" id="bt_search" style="margin-left: 2px">搜索</button>
+                    <button type="button" class="btn" data-toggle="modal" data-target="#addshow"
+                            style="margin-left: 2px">服务器添加
+                    </button>
+                    <button type="button" class="btn" data-toggle="modal" data-target="#excelshow"
+                            style="margin-left: 2px">Excel导入服务器
+                    </button>
+                    <button type="button" class="btn" id="bt_mutidelete" style="margin-left: 2px">批量删除</button>
+                </form>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <th><input id="selectall" type="checkbox"></th>
+                    <th>服务器名</th>
+                    <th>服务器IP</th>
+                    <th>服务器端口</th>
+                    <th>服务器用户</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody id="tbodycontent">
+
+                    </tbody>
+                </table>
+                <p id="pageinfo"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="updateshow">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">服务器信息更新</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <input type="text" readonly="readonly" class="form-control" id="id">
+                        <input type="text" class="form-control" id="name">
+                        <input type="text" class="form-control" id="ip">
+                        <input type="text" class="form-control" id="port">
+                        <input type="text" class="form-control" id="user">
+                        <button type="button" class="btn" id="bt_update">更新</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addshow">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">服务器添加</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="add_name" placeholder="Server Name">
+                    <input type="text" class="form-control" id="add_ip" placeholder="Server IP">
+                    <input type="text" class="form-control" id="add_port" placeholder="Server Port">
+                    <input type="text" class="form-control" id="add_user" placeholder="Server User">
+                    <button type="button" class="btn btn-primary" id="bt_add">添加</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="excelshow">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Excel导入服务器</h4>
+                </div>
+                <div class="modal-body">
+                    <p>模板下载：<a href="/servers/getexcel">点击下载Excel模板</a></p>
+                    <form action="/servers/insert_from_excel" enctype='multipart/form-data' method='POST'>
+                        <div class="form-group">
+                            <input type="file" name="servers">
+                        </div>
+                        <button type="submit" class="btn">上传并导入</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

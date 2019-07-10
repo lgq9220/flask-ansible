@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% block head %}
+    <title>playbook</title>
+    <style type="text/css">
+        #pre_deploy_result {
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
+            white-space: -o-pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+    <script type="text/javascript">
+        function delete_by_id(id) {
+            $.ajax({
+                url: '/playbook/delete_by_id',
+                type: 'GET',
+                cache: false,
+                data: {
+                    id: id,
+                },
+                success: function (data) {
+                    text_search = $('#text_search').val();
+                    pagenow = parseInt($('#pagenow').html());
+                    get_page(pagenow, 15, text_search);
+                }
+            });
+        }
+
+        function deploy(id) {
+            $('#isnotdeploy').html("部署中，请耐心等待");
+            $.ajax({
+                url: '/playbook/deploy_by_id',
+                type: 'get',
+                cache: false,
+                data: {
+                    id: id,
+                },
+                success: function (data) {
+                    allresult = JSON.parse(data);
+                    $("#deploylog").modal('show');
+                    $("#p_ansible_command").html(allresult['command']);
+                    deployInterval = setInterval(function () {
+                        $.ajax({
+                            url: '/static/logs/' + allresult['logpath'],
+                            type: 'get',
+                            cache: false,
+                            success: function (data) {
+                                $("#pre_deploy_result").html(data);
+                                if (data.indexOf("\n\t\t\t") != -1) {
+                                    clearInterval(deployInterval);
+                                    $('#isnotdeploy').html("部署结束!");
+                                }
+                            }
+                        });
+                    }, 3000);
+                }
+            });
+        }
+
+        function update_show(id) {
+            $.ajax({
+                url: '/playbook/get_by_id',
+                type: 'get',
+                cache: false,
+                data: {
+                    id: id,
+                },
+                success: function (data) {
+                    //name, hosts_path, playbook_path, forks
+                    tmpone = JSON.parse(data)[0];
+                    $("#id").val(id);
+                    $("#name").val(tmpone['name']);
+                    $("#hosts_path").val(tmpone['hosts_path']);
+                    $("#playbook_path").val(tmpone['playbook_path']);
+                    $("#forks").val(tmpone['forks']);
+                    $("#updateshow").modal('show');
+                }
+            });
+        }
+
+        function get_page(pagenow, pagesize, search) {
+            info = {pagenow: pagenow, pagesize: pagesize, search: search}
+            $.ajax({
+                url: '/playbook/get_by_page',
+                type: 'post',
+                cache: false,
+                data: JSON.stringify(info),
+                success: function (data) {
+                    allresult = JSON.parse(data);
+                    $("#tbodycontent").html("");
+                    //name, hosts_path, playbook_path, forks
+                    for (i = 0; i < allresult.length; i++) {
+                        tmpone = '<tr>'
+                        tmpone = tmpone + '<td>' + allresult[i]['name'] + '</td>'
+                        tmpone = tmpone + '<td>' + allresult[i]['hosts_path'] + '</td>'
+                        tmpone = tmpone + '<td>' + allresult[i]['playbook_path'] + '</td>'
+                        tmpone = tmpone + '<td>' + allresult[i]['forks'] + '</td>'
+                        tmpone = tmpone + '<td>'
+                        tmpone = tmpone + '<button class="btn btn-sm" onClick="update_show(' + allresult[i]['id'] + ')">更新</button>'
+                        tmpone = tmpone + ' <button class="btn btn-sm" style="margin-left: 2px;" onClick="delete_by_id(' + allresult[i]['id'] + ')">删除</button>'
+                        tmpone = tmpone + ' <button class="btn btn-sm" style="margin-left: 2px;" onClick="deploy(' + allresult[i]['id'] + ')">部署</button>'
+                        tmpone = tmpone + '</td>'
+                        tmpone = tmpone + '</tr>'
+                        $("#tbodycontent").append(tmpone);
+                    }
+                }
+            });
+            pagedown = '<button type="button" onclick="get_page(' + (pagenow - 1) + ',' + pagesize + ', \'' + search + '\')" class="btn btn-sm">上一页</button>'
+            pageup = '<button type="button" onclick="get_page(' + (pagenow + 1) + ',' + pagesize + ', \'' + search + '\')" class="btn btn-sm">下一页</button>'
+            $("#pageinfo").html("当前页：<p style='display: inline;' id='pagenow'>" + pagenow + "</p>");
+            $("#pageinfo").append(" " + pagedown);
+            $("#pageinfo").append(" " + pageup);
+        }
+
+        $(document).ready(function () {
+            get_page(1, 15, '');
+            $('#bt_search').click(function () {
+                text_search = $('#text_search').val();
+                get_page(1, 15, text_search)
+            });
+            //name, hosts_path, playbook_path, forks
+            $('#bt_update').click(function () {
+                id = $('#id').val();
+                name_ = $('#name').val();
+                hosts_path = $('#hosts_path').val();
+                playbook_path = $('#playbook_path').val();
+                forks = $('#forks').val();
+                info = {id: id, name: name_, hosts_path: hosts_path, playbook_path: playbook_path, forks: forks}
+                $.ajax({
+                    url: '/playbook/update',
+                    type: 'POST',
+                    cache: false,
+                    data: JSON.stringify(info),
+                    success: function (data) {
+                        $("#updateshow").modal('hide');
+                        text_search = $('#text_search').val();
+                        pagenow = parseInt($('#pagenow').html());
+                        get_page(pagenow, 15, text_search);
+                    }
+                });
+            });
+
+            //name, hosts_path, playbook_path, forks
+            $('#bt_add').click(function () {
+                name_ = $('#add_name').val();
+                hosts_path = $('#add_hosts_path').val();
+                playbook_path = $('#add_playbook_path').val();
+                forks = $('#add_forks').val();
+                info = {name: name_, hosts_path: hosts_path, playbook_path: playbook_path, forks: forks};
+                $.ajax({
+                    url: '/playbook/insert',
+                    type: 'POST',
+                    cache: false,
+                    data: JSON.stringify(info),
+                    success: function (data) {
+                        $("#addshow").modal('hide');
+                        text_search = $('#text_search').val();
+                        pagenow = parseInt($('#pagenow').html());
+                        get_page(pagenow, 15, text_search);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form class="form-inline">
+                    <input type="text" class="form-control" id="text_search">
+                    <button type="button" class="btn" id="bt_search">搜索</button>
+                    <button type="button" class="btn" data-toggle="modal" data-target="#addshow"
+                            style="display: inline;margin-left: 2px;">Playbook添加
+                    </button>
+                </form>
+
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <!-- name, hosts_path, playbook_path, forks -->
+                    <th>名称</th>
+                    <th>主机配置</th>
+                    <th>Playbook</th>
+                    <th>并发</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody id="tbodycontent">
+
+                    </tbody>
+                </table>
+                <p id="pageinfo"></p>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="updateshow">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Playbook更新</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <!-- name, hosts_path, playbook_path, forks -->
+                        <input type="text" readonly="readonly" class="form-control" id="id">
+                        <input type="text" class="form-control" id="name">
+                        <input type="text" class="form-control" id="hosts_path">
+                        <input type="text" class="form-control" id="playbook_path">
+                        <input type="text" class="form-control" id="forks">
+                        <button type="button" class="btn" id="bt_update">更新</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addshow">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Playbook添加</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <!-- name, hosts_path, playbook_path, forks -->
+                        <input type="text" class="form-control" id="add_name" placeholder="name">
+                        <input type="text" class="form-control" id="add_hosts_path" placeholder="hosts_path">
+                        <input type="text" class="form-control" id="add_playbook_path" placeholder="playbook_path">
+                        <input type="text" class="form-control" id="add_forks" placeholder="forks">
+                        <button type="button" class="btn btn-primary" id="bt_add">添加</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="deploylog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="isnotdeploy">Playbook日志展现</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="p_ansible_command"></p>
+                    <pre id="pre_deploy_result"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

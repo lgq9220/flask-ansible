@@ -1,0 +1,97 @@
+
+PLAY [all] *********************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [127.0.0.1]
+ok: [127.0.0.2]
+
+TASK [run ifconfig] ************************************************************
+changed: [127.0.0.2]
+changed: [127.0.0.1]
+
+TASK [debug] *******************************************************************
+ok: [127.0.0.1] => {
+    "shell_result": {
+        "changed": true,
+        "cmd": "ifconfig",
+        "delta": "0:00:00.009978",
+        "end": "2019-07-09 20:22:06.625447",
+        "failed": false,
+        "rc": 0,
+        "start": "2019-07-09 20:22:06.615469",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500\n        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255\n        ether 02:42:c3:b2:6e:a6  txqueuelen 0  (Ethernet)\n        RX packets 31416  bytes 1906299 (1.8 MiB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 44779  bytes 94129152 (89.7 MiB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 172.18.119.61  netmask 255.255.240.0  broadcast 172.18.127.255\n        ether 00:16:3e:0e:7b:af  txqueuelen 1000  (Ethernet)\n        RX packets 1613802  bytes 1579161780 (1.4 GiB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 857799  bytes 188978841 (180.2 MiB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\nlo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536\n        inet 127.0.0.1  netmask 255.0.0.0\n        loop  txqueuelen 1  (Local Loopback)\n        RX packets 3243213  bytes 781908907 (745.6 MiB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 3243213  bytes 781908907 (745.6 MiB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0",
+        "stdout_lines": [
+            "docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500",
+            "        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255",
+            "        ether 02:42:c3:b2:6e:a6  txqueuelen 0  (Ethernet)",
+            "        RX packets 31416  bytes 1906299 (1.8 MiB)",
+            "        RX errors 0  dropped 0  overruns 0  frame 0",
+            "        TX packets 44779  bytes 94129152 (89.7 MiB)",
+            "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0",
+            "",
+            "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500",
+            "        inet 172.18.119.61  netmask 255.255.240.0  broadcast 172.18.127.255",
+            "        ether 00:16:3e:0e:7b:af  txqueuelen 1000  (Ethernet)",
+            "        RX packets 1613802  bytes 1579161780 (1.4 GiB)",
+            "        RX errors 0  dropped 0  overruns 0  frame 0",
+            "        TX packets 857799  bytes 188978841 (180.2 MiB)",
+            "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0",
+            "",
+            "lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536",
+            "        inet 127.0.0.1  netmask 255.0.0.0",
+            "        loop  txqueuelen 1  (Local Loopback)",
+            "        RX packets 3243213  bytes 781908907 (745.6 MiB)",
+            "        RX errors 0  dropped 0  overruns 0  frame 0",
+            "        TX packets 3243213  bytes 781908907 (745.6 MiB)",
+            "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0"
+        ]
+    }
+}
+ok: [127.0.0.2] => {
+    "shell_result": {
+        "changed": true,
+        "cmd": "ifconfig",
+        "delta": "0:00:00.020300",
+        "end": "2019-07-09 20:22:06.600367",
+        "failed": false,
+        "rc": 0,
+        "start": "2019-07-09 20:22:06.580067",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500\n        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255\n        ether 02:42:c3:b2:6e:a6  txqueuelen 0  (Ethernet)\n        RX packets 31416  bytes 1906299 (1.8 MiB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 44779  bytes 94129152 (89.7 MiB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 172.18.119.61  netmask 255.255.240.0  broadcast 172.18.127.255\n        ether 00:16:3e:0e:7b:af  txqueuelen 1000  (Ethernet)\n        RX packets 1613802  bytes 1579161780 (1.4 GiB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 857799  bytes 188978841 (180.2 MiB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\nlo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536\n        inet 127.0.0.1  netmask 255.0.0.0\n        loop  txqueuelen 1  (Local Loopback)\n        RX packets 3243211  bytes 781908207 (745.6 MiB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 3243211  bytes 781908207 (745.6 MiB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0",
+        "stdout_lines": [
+            "docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500",
+            "        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255",
+            "        ether 02:42:c3:b2:6e:a6  txqueuelen 0  (Ethernet)",
+            "        RX packets 31416  bytes 1906299 (1.8 MiB)",
+            "        RX errors 0  dropped 0  overruns 0  frame 0",
+            "        TX packets 44779  bytes 94129152 (89.7 MiB)",
+            "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0",
+            "",
+            "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500",
+            "        inet 172.18.119.61  netmask 255.255.240.0  broadcast 172.18.127.255",
+            "        ether 00:16:3e:0e:7b:af  txqueuelen 1000  (Ethernet)",
+            "        RX packets 1613802  bytes 1579161780 (1.4 GiB)",
+            "        RX errors 0  dropped 0  overruns 0  frame 0",
+            "        TX packets 857799  bytes 188978841 (180.2 MiB)",
+            "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0",
+            "",
+            "lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536",
+            "        inet 127.0.0.1  netmask 255.0.0.0",
+            "        loop  txqueuelen 1  (Local Loopback)",
+            "        RX packets 3243211  bytes 781908207 (745.6 MiB)",
+            "        RX errors 0  dropped 0  overruns 0  frame 0",
+            "        TX packets 3243211  bytes 781908207 (745.6 MiB)",
+            "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0"
+        ]
+    }
+}
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+127.0.0.2                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+			

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block head %}
+    <title>实践哥测试</title>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#ajaxtest").click(function () {
+                $.ajax({
+                    url: '/shijiange/ajaxtest',
+                    type: 'get',
+                    cache: false,
+                    success: function (data) {
+                        $('#ajaxtestresult').html(data);
+                    }
+                });
+            });
+
+            $("#ajaxget").click(function () {
+                server_name = $("#server_name").val();
+                server_ip = $("#server_ip").val();
+                $.ajax({
+                    url: '/shijiange/ajaxget',
+                    type: 'get',
+                    cache: false,
+                    data: {
+                        server_name: server_name,
+                        server_ip: server_ip,
+                    },
+                    success: function (data) {
+                        $('#ajaxgetresult').html(data);
+                    }
+                });
+            });
+
+            $("#ajaxpost").click(function () {
+                username = $("#username").val();
+                password = $("#password").val();
+                info = {"username": username, "password": password};
+                $.ajax({
+                    url: '/shijiange/ajaxpost',
+                    type: 'post',
+                    cache: false,
+                    data: JSON.stringify(info),
+                    success: function (data) {
+                        $('#ajaxpostresult').html(data);
+                    }
+                });
+            });
+
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="container">
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col">
+                <button type="button" id="ajaxtest" class="btn btn-primary">ajaxtest</button>
+                <pre id="ajaxtestresult"></pre>
+            </div>
+            <div class="col">
+                <form>
+                    <input type="text" class="form-control" id="server_name" placeholder="Server Name">
+                    <input type="text" class="form-control" id="server_ip" placeholder="server ip">
+                    <button type="button" id="ajaxget" class="btn btn-primary">ajaxget</button>
+                </form>
+                <pre id="ajaxgetresult"></pre>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" id="username" placeholder="Username">
+                <input type="password" class="form-control" id="password" placeholder="Password">
+                <button type="button" id="ajaxpost" class="btn btn-primary">ajaxpost</button>
+                <pre id="ajaxpostresult"></pre>
+            </div>
+        </div>
+    </div>
+{% endblock %}
