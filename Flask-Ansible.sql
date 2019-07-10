@@ -1,7 +1,3 @@
-create database devops;
-grant all privileges on *.* to 'shijiange'@'127.0.0.1' identified by 'shijiangepwd';
-flush privileges;
-
 use devops;
 CREATE TABLE `servers` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
